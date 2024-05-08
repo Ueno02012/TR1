@@ -19,6 +19,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int currentFrame[20] = { 0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190 };
 	int offsetY = 360;
 
+
+
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
 	char preKeys[256] = {0};
