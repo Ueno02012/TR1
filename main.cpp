@@ -1,7 +1,11 @@
 #include <Novice.h>
+#define _USE_MATH_DEFINES
 #include<cmath>
+
 #include"ImGuiManager.h"
 const char kWindowTitle[] = "LC1C_04_ウエノ_ユウキ_タイトル";
+
+
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -9,18 +13,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, 1280, 720);
 
-	const float kAmp = 200.0f;
+	struct Vector2 {
+		float x, y;
+	};
+	struct Vector2Int
+	{
+		int x, y;
+	};
+	Vector2 pos = { 640,360 };
+	
+	//float Ripple[20] = {};
 
-	const float kHz = 1.0f;
+	Vector2Int mousePos = {0,0};
+	
+	int isRipple = false;
+	float speed = 2.0f;
+	float radius = 4;
 
-	float inputFloat2[2] = { 0,0,};
-
-	float currentTime[20] = { 0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f };
-	int currentFrame[20] = { 0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190 };
-	int offsetY = 360;
-
-
-
+	int color = 0xFFFFFFFF;
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
 	char preKeys[256] = {0};
@@ -37,16 +47,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
-		for (int i = 0; i < 20; i++) {
-			currentFrame[i]++;
-			currentTime[i] = static_cast<float>(currentFrame[i]) / 60.0f;
+
+		Novice::GetMousePosition(&mousePos.x, &mousePos.y);
+
+		if (Novice::IsTriggerMouse(0)) {
+			isRipple = true;
+			color = 0xFFFFFFFF;
+			radius = 4;
+
+			pos.x = static_cast<float>(mousePos.x);
+			pos.y = static_cast<float>(mousePos.y);
 
 		}
-		ImGui::Begin("Debug1");
-		ImGui::InputFloat2("currenyFrame", inputFloat2);
-		ImGui::End();
-
-		///
+		
+		if (isRipple) {
+				radius += speed;
+				color -= 2;
+		}
+		if (color<=0xFFFFFF00) {
+			radius = 4;
+			isRipple = false;
+		}
 		/// ↑更新処理ここまで
 		///
 
@@ -54,12 +75,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		
-		Novice::DrawLine(0,offsetY, 1280,offsetY, WHITE);
-		for (int i = 0; i < 20; i++) {
-			Novice::DrawEllipse(i*50+200, static_cast<int>(kAmp * sinf(kHz * currentTime[i])) + offsetY, 16, 16, 0.0f, 0xFFFFFFFF, kFillModeSolid);
+		if (isRipple) {
+			Novice::DrawEllipse(static_cast<int>(pos.x), static_cast<int> (pos.y), static_cast<int>(radius), static_cast<int>(radius), 0.0f, color, kFillModeWireFrame);
 
 		}
-
 		///
 		/// ↑描画処理ここまで
 		///
